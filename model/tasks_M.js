@@ -12,7 +12,7 @@ async function getOne(taskId, UserID) {
     return result[0];
 }
 
-async function add({ text, UserID, CategoryID }) {  // ✅ سم موحد
+async function add({ text, UserID, CategoryID }) {  // ✅  موحد
     let sql = `INSERT INTO tasks (text, UserID, CategoryID) VALUES (?,?,?)`;
     let [result] = await db.query(sql, [text, UserID, CategoryID]);
     return result.insertId;
