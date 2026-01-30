@@ -1,5 +1,5 @@
 const path = require('path');  
-require('dotenv').config({ path: path.join(__dirname, '.env') }); // م
+require('dotenv').config({ path: path.join(__dirname, '.env') }); // 
 const express = require('express');
 const db = require('./config/db_config');
 const cookies = require('cookie-parser');
