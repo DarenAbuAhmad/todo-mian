@@ -1,5 +1,5 @@
 const path = require('path'); // ✅ أولًا تعر
-require('dotenv').config({ path: path.join(__dirname, '.env') }); // ✅ ثم dotenv
+require('dotenv').config({ path: path.join(__dirname, '.env') }); // ✅ ثم dote
 const express = require('express');
 const db = require('./config/db_config');
 const cookies = require('cookie-parser');
