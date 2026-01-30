@@ -26,7 +26,7 @@ async function addTask(req, res) {
     try {
         let text = req.body.text;
         let UserID = req.user.id;
-        let CategoryID = req.body.CategoryID ?? null; // null لو لم يرسل
+        let CategoryID = req.body.CategoryID ?? null; // لو لم يرسل
 
         let taskId = await add({ text, UserID, CategoryID });
         if (!taskId) return res.status(500).json({ message: "Server error" });
