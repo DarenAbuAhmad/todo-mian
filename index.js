@@ -1,4 +1,4 @@
-const path = require('path'); // ✅ أولًا تعريف p
+const path = require('path'); // ✅ أولًا تعريف 
 require('dotenv').config({ path: path.join(__dirname, '.env') }); // ✅ ثم dotenv
 const express = require('express');
 const db = require('./config/db_config');
