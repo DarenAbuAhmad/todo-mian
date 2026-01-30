@@ -1,81 +1,82 @@
-const {getAll,add,getOne,remove,update} = require('../model/tasks_M.js');
+const { getAll, getOne, add, remove, update } = require('../model/tasks_M');
 
-async function getAllTasks(req,res) {
-    try{
+async function getAllTasks(req, res) {
+    try {
         let tasks = await getAll(req.user.id);
-        if(tasks.length == 0){
-            return res.status(400).json({message:"אין נתונים"})
-        }
-        res.status(200).json(tasks)
-    }catch(err){
-        res.status(500).json({message:"Server error"})
-    }
-}
-
-async function addTask(req,res) {
-    try{
-        let text = req.body.text;
-        let userId = req.user.id;
-        let catId = req.body.catId || null;
-
-        let taskId = await add({text,userId,catId});
-        if(!taskId){
-            return res.status(500).json({message:"Server error"});
-        }
-        res.status(201).json({message:"נוסף בהצלחה"});
-    }catch(err){
+        res.status(200).json(tasks);
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
-async function getTask(req,res) {
-    try{
-        let task = await getOne(req.id,req.user.id);
-        if(!task){
-            return res.status(400).json({message:`task is not found!`})
-        }
+async function getTask(req, res) {
+    try {
+        const taskId = req.params.id;
+        let task = await getOne(taskId, req.user.id);
+        if (!task) return res.status(404).json({ message: "Task not found" });
         res.status(200).json(task);
-    }catch(err){
-        res.status(500).json({message:"Server error"})
-    }
-}
-
-async function deleteTask(req,res) {
-    try{
-        let affectedRows = await remove(req.id,req.user.id);
-        if(!affectedRows){
-            return res.status(400).json({message:`task ${req.id} not found!`})
-        }
-        res.status(200).json({message:"deleted!"});
-    }catch(err){
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"Server error"})
+        res.status(500).json({ message: "Server error" });
     }
 }
 
-async function editTask(req,res) {
-    try{
-        let taskId = req.id;
-        let userId = req.user.id;
-        let newTask = req.newTask;
+async function addTask(req, res) {
+    try {
+        let text = req.body.text;
+        let UserID = req.user.id;
+        let CategoryID = req.body.CategoryID ?? null; // null لو لم يرسل
 
-        let affectedRows = await update(taskId,userId,newTask);
-        if(!affectedRows){
-            return res.status(400).json({message:`Task ${req.id} not found!`})
-        }
-        res.status(200).json({message:"updated!"});
-    }catch(err){
+        let taskId = await add({ text, UserID, CategoryID });
+        if (!taskId) return res.status(500).json({ message: "Server error" });
+
+        res.status(201).json({ message: "נוסף בהצלחה", taskId });
+    } catch (err) {
         console.error(err);
-        
-        res.status(500).json({message:"Server error"})
+        res.status(500).json({ message: "Server error" });
     }
 }
 
-module.exports={
+async function deleteTask(req, res) {
+    try {
+        let id = req.params.id;
+        let result = await remove(id, req.user.id);
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Task not found" });
+        res.status(200).json({ message: "נמחק בהצלחה" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+async function updateTask(req, res) {
+    try {
+        const taskId = req.params.id;
+        const userId = req.user.id;
+        const { text, isDone, CategoryID } = req.body;
+
+        const dataToUpdate = {};
+        if (text !== undefined) dataToUpdate.text = text;
+        if (isDone !== undefined) dataToUpdate.isDone = isDone;
+        if (CategoryID !== undefined) dataToUpdate.CategoryID = CategoryID;
+
+        const affectedRows = await update(taskId, userId, dataToUpdate);
+
+        if (affectedRows === 0)
+            return res.status(404).json({ message: `Task ${taskId} not found` });
+
+        res.status(200).json({ message: "Task updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+module.exports = {
     getAllTasks,
-    addTask,
     getTask,
+    addTask,
     deleteTask,
-    editTask
-}
+    updateTask
+};
